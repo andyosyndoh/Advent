@@ -36,25 +36,15 @@ func main() {
 			slope = -1
 		}
 
-		parts1 := confirm(parts, slope)
-		num3, _ := strconv.Atoi(parts1[0])
-		num4, _ := strconv.Atoi(parts1[1])
-		if err1 != nil || err2 != nil {
-			fmt.Println(err1)
-			os.Exit(1)
-		}
-		slope = 0
-		if num4 > num3 {
-			slope = 1
-		} else if num4 < num3 {
-			slope = -1
-		}
-		fmt.Println(j,parts)
-		fmt.Println(j,parts1)
-		if check(parts1, slope) {
+		
+		if check(parts, slope) {
 			safe += 1
+		} else {
+			if check2(parts) {
+				safe += 1
+			}
 		}
-		fmt.Println()
+		// fmt.Println()
 	}
 	fmt.Println((safe))
 }
@@ -71,46 +61,42 @@ func check(parts []string, slope int) bool {
 			os.Exit(1)
 		}
 		if curr > prevv && slope == -1 {
-			fmt.Println(curr, prevv, "inc")
+			// fmt.Println(curr, prevv, "inc")
 			return false
 		}
 		if curr < prevv && slope == 1 {
-			fmt.Println(curr, prevv, "dec")
+			// fmt.Println(curr, prevv, "dec")
 			return false
 		}
 		diff := curr - prevv
 		if diff > 3 || diff < -3 || diff == 0 {
-			fmt.Println(curr, prevv, "pro")
+			// fmt.Println(curr, prevv, "pro")
 			return false
 		}
 	}
 	return true
 }
 
-func confirm(parts []string, slope int) []string {
-	if slope == 0 {
-		return parts[1:]
-	}
-	for i := 1; i < len(parts); i++ {
-		curr, err1 := strconv.Atoi(parts[i])
-		prevv, err2 := strconv.Atoi(parts[i-1])
-		if err1 != nil || err2 != nil {
-			fmt.Println(err1)
-			os.Exit(1)
+func check2(parts []string) bool {
+	for i := range parts {
+		new := []string{}
+		for j, d :=range parts {
+			if i != j {
+				new = append(new, d)
+			}
 		}
-		if curr > prevv && slope == -1 {
-			parts = append(parts[:i-1] ,parts[i:]...)
-			return parts
+		num1, _ := strconv.Atoi(new[0])
+		num2, _ := strconv.Atoi(new[1])
+
+		slope := 0
+		if num2 > num1 {
+			slope = 1
+		} else if num2 < num1 {
+			slope = -1
 		}
-		if curr < prevv && slope == 1 {
-			parts = append(parts[:i-1] ,parts[i:]...)
-			return parts
-		}
-		diff := curr - prevv
-		if diff > 3 || diff < -3 || diff == 0 {
-			parts = append(parts[:i-1] ,parts[i:]...)
-			return parts
+		if check(new, slope) {
+			return true
 		}
 	}
-	return parts
+	return false
 }
