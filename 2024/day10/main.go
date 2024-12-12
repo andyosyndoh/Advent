@@ -19,74 +19,73 @@ func main() {
 
 	grid := strings.Split(string(input), "\n")
 
-	visited := make(map[string]bool)
-
 	var paths [][]string
+
+	visited := make([][]bool, len(grid))
+	for i := range visited {
+		visited[i] = make([]bool, len(grid[0]))
+	}
 
 	for i, line := range grid {
 		for j, ch := range line {
 			if ch == '0' {
-				fmt.Println(i,j)
+				// fmt.Println(i, j)
+
 				findpaths(grid, i, j, visited, []string{}, &paths)
 			}
 		}
 	}
 
-	for _, f := range paths {
-		// for _, g := range f {
-		// 	s := strings.Split(g, ",")
-		// 	f, _ := strconv.Atoi(s[0])
-		// 	n, _ := strconv.Atoi(s[1])
-		// 	fmt.Print(grid[f][n])
-		// 	fmt.Print(" ")
-		// }
-		fmt.Println(f)
-	}
+	// for _, f := range paths {
+	// 	fmt.Println(f)
+	// 	// fmt.Println("hello")
+	// }
 
 	fmt.Println(len(paths))
 }
 
-func findpaths(grid []string, i, j int, visited map[string]bool, path []string, paths *[][]string) {
-	visited[fmt.Sprintf("%d,%d", i, j)] = true
+func findpaths(grid []string, i, j int, visited [][]bool, path []string, paths *[][]string) {
+	visited[i][j] = true
 	path = append(path, fmt.Sprintf("%d,%d", i, j))
 
 	if grid[i][j] == '9' {
-		if conf(*paths, path) {
-			*paths = append(*paths, path)
-		}
-		visited[fmt.Sprintf("%d,%d", i, j)] = false
+		f := make([]string, len(path))
+		copy(f, path)
+		// if comp(*paths, f) {
+		*paths = append(*paths, f)
+		// }
+		visited[i][j] = false
 		return
 	}
 
 	for _, dir := range directions {
 		ni, nj := i+dir[0], j+dir[1]
-		if ni >= 0 && nj >= 0 && ni < len(grid) && nj < len(grid[0]) && !visited[fmt.Sprintf("%d,%d", i, j)] && grid[ni][nj] != '.' {
+		// fmt.Println(ni,nj)
+		if ni >= 0 && nj >= 0 && ni < len(grid) && nj < len(grid[ni]) && !visited[ni][nj] && grid[ni][nj] != '.' {
 			curr, _ := strconv.Atoi(string(grid[i][j]))
 			next, _ := strconv.Atoi(string(grid[ni][nj]))
 			if curr+1 == next {
+				// fmt.Print(path)
 				findpaths(grid, ni, nj, visited, path, paths)
 			}
 		}
 	}
 
-	visited[fmt.Sprintf("%d,%d", i, j)] = false
-	// path = path[:len(path)-1]
+	visited[i][j] = false
 }
 
-func comp(back, path []string) bool {
-	for i:= 0; i < 9; i++ {
-		if back[i] != path[i] {
-			return true
+func comp(paths [][]string, path []string) bool {
+	count := 0
+	for _, p := range paths {
+		for i := range p {
+			if p[i] != path[i] {
+				count++
+			}
 		}
-	}
-	return false
-}
-
-func conf(paths [][]string, path []string) bool {
-	for _, back := range paths {
-		if !comp(back, path) {
+		if count == 9 {
 			return false
 		}
+		count = 0
 	}
 	return true
 }
